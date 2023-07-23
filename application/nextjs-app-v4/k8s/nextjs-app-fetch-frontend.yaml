@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: frontend
+    tier: frontend
+    version: v3
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+      tier: frontend
+      version: v3
+  template:
+    metadata:
+      labels:
+        app: frontend
+        tier: frontend
+        version: v3
+    spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+      containers:
+      - image: fetch-app-frontend:v1.0.1
+        name: fetch-app-frontend
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /api/healthz
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /api/healthz
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        securityContext:
+          allowPrivilegeEscalation: false

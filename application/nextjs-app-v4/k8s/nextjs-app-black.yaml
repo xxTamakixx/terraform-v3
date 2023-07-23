@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: black-deployment
+  labels:
+    app: black
+    tier: frontend
+    version: v1 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: black
+      tier: frontend
+      version: v1 
+  template:
+    metadata:
+      labels:
+        app: black
+        tier: frontend
+        version: v1 
+    spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+      containers:
+      - image: nextjs-app-black:v1.0.0
+        name: black-container 
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /api/healthz
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /api/healthz
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        securityContext:
+          allowPrivilegeEscalation: false

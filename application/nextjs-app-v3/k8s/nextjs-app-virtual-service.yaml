@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: nextjs-app-virtual-service
+  namespace: default
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - nextjs-app-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: frontend-service.default.svc.cluster.local
+        port:
+          number: 3000

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: backend
+    version: v1
+  name: backend
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: backend
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: backend
+        version: v1
+    spec:
+      securityContext:
+        runAsUser: 1001
+      containers:
+      - image: fetch-app-backend:v1.0.3
+        name: fetch-app-backend
+        ports:
+        - containerPort: 8000
+        env:
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: secret-backend
+                key: secret_key
+          - name: DEBUG
+            value: "False"
+        livenessProbe:
+          httpGet:
+            path: /api/healthz
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /api/healthz
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 3 
+        securityContext:
+          allowPrivilegeEscalation: false
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: backend
+  name: backend-service
+spec:
+  ports:
+  ports:
+  - port: 8000
+    name: http 
+  selector:
+    app: backend

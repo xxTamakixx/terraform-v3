@@ -1,0 +1,20 @@
+# ベースイメージの指定
+FROM python:3.9
+
+# 作業ディレクトリの設定
+WORKDIR /app
+
+# 必要なファイルをコンテナにコピー
+COPY requirements.txt .
+
+# 依存パッケージのインストール
+RUN pip install --no-cache-dir -r requirements.txt
+
+# アプリケーションのファイルをコンテナにコピー
+COPY . .
+
+# ポートの公開（必要に応じて変更してください）
+EXPOSE 8000
+
+# コンテナ内で実行されるコマンドの指定
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
